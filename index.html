@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio v1</title>
+  <style>
+    html, body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #444;
+      margin: 0;
+      font-family: sans-serif;
+      height: 100vh;
+    }
+    .flexblockone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      position: absolute;
+      z-index: 1;
+    }
+    .flexblocktwo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      position: absolute;
+      z-index: 2;
+    }
+    .vidwrapper {
+      position: relative;
+    }
+    .vid {
+      border-radius: 6px;
+      box-shadow: -10px 10px 50px rgba(0, 0, 0, 0.2);
+    }
+    .logo {
+      position: absolute;
+      top: 0;
+      left: 30px;
+      max-height: 80px;
+      display: none;
+    }
+    h1 {
+      font-size: 1rem;
+      color: #AAA;
+      margin: 0;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background: #003486;
+      color: #fff;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      cursor: pointer !important;
+    }
+    button:hover {
+      background: #888;
+      cursor: pointer !important;
+    }
+  </style>
+</head>
+<body>
+
+  <button onclick="toggleFlexBlockTwo()">Toggle Vehicle</button>
+
+  <div class="flexblockone">
+    <div class="vidwrapper">
+      <video class="vid" width="960" height="540" muted playsinline preload="auto" id="video1">
+        <source src="studio.mp4" type="video/mp4" />
+      </video>
+      <img class="logo" src="logo.svg" alt="logo">
+    </div>
+  </div>
+
+  <div class="flexblocktwo" id="flexblocktwo">
+    <div class="vidwrapper">
+      <video class="vid" width="960" height="540" muted playsinline preload="auto" id="video2">
+        <source src="car.mp4" type="video/mp4" />
+      </video>
+      <img class="logo" src="logo.svg" alt="logo">
+    </div>
+  </div>
+
+  <script>
+    const video1 = document.getElementById('video1');
+    const video2 = document.getElementById('video2');
+    const flexblocktwo = document.getElementById('flexblocktwo');
+
+    function waitUntilCanPlay(video) {
+      return new Promise(resolve => {
+        if (video.readyState >= 3) resolve();
+        else video.oncanplaythrough = resolve;
+      });
+    }
+
+    async function syncPlayLoop() {
+      await Promise.all([waitUntilCanPlay(video1), waitUntilCanPlay(video2)]);
+
+      const duration = video1.duration;
+
+      function syncPlay() {
+        video1.currentTime = 0;
+        video2.currentTime = 0;
+
+        video1.play();
+        video2.play();
+
+        setTimeout(syncPlay, duration * 1000);
+      }
+
+      syncPlay();
+    }
+
+    function toggleFlexBlockTwo() {
+      if (flexblocktwo.style.display === 'none' || getComputedStyle(flexblocktwo).display === 'none') {
+        flexblocktwo.style.display = 'flex';
+      } else {
+        flexblocktwo.style.display = 'none';
+      }
+    }
+
+    window.addEventListener('load', syncPlayLoop);
+  </script>
+
+</body>
+</html>
